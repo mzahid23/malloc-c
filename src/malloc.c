@@ -93,16 +93,54 @@ struct _block *findFreeBlock(struct _block **last, size_t size)
 // \TODO Put your Best Fit code in this #ifdef block
 #if defined BEST && BEST == 0
    /** \TODO Implement best fit here */
+   struct _block *bestFit = NULL;
+   while (curr)
+   {
+      if (curr->free && curr->sizw >= size)
+      {
+         if (bestFit == NULL || curr->size < bestFit->size)
+         {
+            bestFit = curr;
+         }
+      }
+      *last = curr;
+      curr = curr->next;
+   }
+   return bestFit;
 #endif
 
 // \TODO Put your Worst Fit code in this #ifdef block
 #if defined WORST && WORST == 0
    /** \TODO Implement worst fit here */
+   struct _block *worstFit = NULL;
+   while (curr)
+   {
+      if (curr->free && curr->size >= size)
+      {
+         if (worstFit == NULL || curr->size > worstFit->size)
+         {
+            worstFit = curr;
+         }
+      }
+      *last = curr;
+      curr = curr->next;
+   }
+   return worstFit;
 #endif
 
 // \TODO Put your Next Fit code in this #ifdef block
 #if defined NEXT && NEXT == 0
    /** \TODO Implement next fit here */
+   if (block_final != NULL)
+   {
+      curr = block_final;
+   }
+   while (curr && !(curr->free && curr->size >= size))
+   {
+      *last = curr;
+      curr = curr->next;
+      block_final = curr;
+   }
 #endif
 
    return curr;
@@ -153,6 +191,7 @@ struct _block *growHeap(struct _block *last, size_t size)
    curr->size = size;
    curr->next = NULL;
    curr->free = false;
+   num_grows++;
    return curr;
 }
 
@@ -170,7 +209,7 @@ struct _block *growHeap(struct _block *last, size_t size)
  */
 void *malloc(size_t size) 
 {
-
+   num_requested+=size;
    if( atexit_registered == 0 )
    {
       atexit_registered = 1;
@@ -197,6 +236,21 @@ void *malloc(size_t size)
             If the leftover space in the new block is less than the sizeof(_block)+4 then
             don't split the block.
    */
+   if (next && (next->size > size))
+   {
+      if ((next->size - size) > (sizeof(struct _block)+4))
+      {
+         size_t oldSize = next->size;
+         next->size = size;
+
+         struct _block *newBlock = (struct _block *)((char*)BLOCK_DATA(next) + size);
+         newBlock->size = oldSize - size - sizeof(struct _block);
+         newBlock->next = next->next;
+         next->next = newBlock;
+         newBlock->free = true;
+         num_splits++;
+      }
+   }
 
    /* Could not find free _block, so grow heap */
    if (next == NULL) 
