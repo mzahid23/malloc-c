@@ -56,6 +56,7 @@ struct _block
 
 
 struct _block *heapList = NULL; /* Free list to track the _blocks available */
+struct _block *block_final = NULL;
 
 /*
  * \brief findFreeBlock
@@ -96,7 +97,7 @@ struct _block *findFreeBlock(struct _block **last, size_t size)
    struct _block *bestFit = NULL;
    while (curr)
    {
-      if (curr->free && curr->sizw >= size)
+      if (curr->free && curr->size >= size)
       {
          if (bestFit == NULL || curr->size < bestFit->size)
          {
@@ -256,6 +257,11 @@ void *malloc(size_t size)
    if (next == NULL) 
    {
       next = growHeap(last, size);
+      max_heap =+ size;
+   }
+   else
+   {
+      num_reuses++;
    }
 
    /* Could not find free _block or grow heap, so just return NULL */
@@ -268,6 +274,7 @@ void *malloc(size_t size)
    next->free = false;
 
    /* Return data address associated with _block to the user */
+   num_mallocs++;
    return BLOCK_DATA(next);
 }
 
@@ -281,8 +288,9 @@ void *malloc(size_t size)
  *
  * \return none
  */
-void free(void *ptr) 
+void free(void *ptr)
 {
+   struct _block *previous = heapList;
    if (ptr == NULL) 
    {
       return;
@@ -293,21 +301,41 @@ void free(void *ptr)
    assert(curr->free == 0);
    curr->free = true;
 
+   num_frees++;
+
    /* TODO: Coalesce free _blocks.  If the next block or previous block 
             are free then combine them with this block being freed.
    */
+   while (previous && (previous->next != curr))
+   {
+      previous = previous->next;
+   }
+   if (curr->next && curr->next->free)
+   {
+      curr->size = curr->size + (size_t)sizeof(struct _block) + curr->next->size;
+      curr->next = curr->next->next;
+      num_coalesces++;
+   }
 }
 
 void *calloc( size_t nmemb, size_t size )
 {
    // \TODO Implement calloc
-   return NULL;
+   void *ptr = malloc(nmemb * size);
+   memset(ptr, 0, nmemb * size);
+
+   return ptr;
 }
 
 void *realloc( void *ptr, size_t size )
 {
    // \TODO Implement realloc
-   return NULL;
+   void *newBlock = malloc(size);
+   memcpy(newBlock, ptr, size);
+   
+   free(ptr);
+
+   return newBlock;
 }
 
 
