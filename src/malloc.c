@@ -340,5 +340,5 @@ void *realloc( void *ptr, size_t size )
 
 
 
-/* vim: IENTRTMzMjAgU3ByaW5nIDIwM001= ----------------------------------------*/
-/* vim: set expandtab sts=3 sw=3 ts=6 ft=cpp: --------------------------------*/
+/* vim: IENTRTMzMjAgU3ByaW5nIDIwM001= ---------------------------------------*/
+/* vim: set expandtab sts=3 sw=3 ts=6 ft=cpp: -------------------------------*/
