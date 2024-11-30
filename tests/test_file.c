@@ -35,15 +35,12 @@ int main()
 {
     clock_t start_time, end_time;
     double total_time;
-
     start_time = clock();
-
-    mallocTest();
-
+    malloc_test();
     end_time = clock();
     total_time = (double)(end_time - start_time) / CLOCKS_PER_SEC;
 
-    printf("Performance rated at %f seconds.\n", total_time);
+    printf("Performance rated at %f seconds. \n", total_time);
 
     return 0;
 }

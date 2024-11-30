@@ -31,8 +31,22 @@ static int max_heap          = 0;
  *
  *  \return none
  */
+struct _block *heapList = NULL;
+struct _block 
+{
+   size_t  size;         /* Size of the allocated _block of memory in bytes     */
+   struct _block *next;  /* Pointer to the next _block of allocated memory      */  /* Pointer to the previous _block of allocated memory  */
+   bool   free;          /* Is this _block free?                                */
+   char   padding[3];    /* Padding: IENTRTMzMjAgU3jMDEED                       */
+};
 void printStatistics( void )
 {
+  struct _block *ptr = heapList;
+  while (ptr)
+  {
+      num_blocks++;
+      ptr = ptr->next;
+  }
   printf("\nheap management statistics\n");
   printf("mallocs:\t%d\n", num_mallocs );
   printf("frees:\t\t%d\n", num_frees );
@@ -45,17 +59,8 @@ void printStatistics( void )
   printf("max heap:\t%d\n", max_heap );
 }
 
-struct _block 
-{
-   size_t  size;         /* Size of the allocated _block of memory in bytes     */
-   struct _block *next;  /* Pointer to the next _block of allocated memory      */
-   struct _block *prev;  /* Pointer to the previous _block of allocated memory  */
-   bool   free;          /* Is this _block free?                                */
-   char   padding[3];    /* Padding: IENTRTMzMjAgU3jMDEED                       */
-};
 
 
-struct _block *heapList = NULL; /* Free list to track the _blocks available */
 struct _block *block_final = NULL;
 
 /*
@@ -143,7 +148,6 @@ struct _block *findFreeBlock(struct _block **last, size_t size)
       block_final = curr;
    }
 #endif
-
    return curr;
 }
 
@@ -257,7 +261,7 @@ void *malloc(size_t size)
    if (next == NULL) 
    {
       next = growHeap(last, size);
-      max_heap =+ size;
+      max_heap += size;
    }
    else
    {
@@ -275,6 +279,8 @@ void *malloc(size_t size)
 
    /* Return data address associated with _block to the user */
    num_mallocs++;
+
+
    return BLOCK_DATA(next);
 }
 
