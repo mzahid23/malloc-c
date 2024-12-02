@@ -257,7 +257,6 @@ void *malloc(size_t size)
       }
    }
 
-   /* Could not find free _block, so grow heap */
    if (next == NULL) 
    {
       next = growHeap(last, size);
