@@ -114,17 +114,3 @@ $ gdb ./tests/ffnf
 (gdb) where
 ```
 Basically, you want to first load gdb with the test program that is crashing. Next, you need to tell gdb to utilize the appropriate malloc library by creating an exec-wrapper that loads it into memory. Next, simply run the program. Once it segfaults, you can print a stack trace by using the where command. From there, you can explore the state of your program and see if you can determine what went wrong.
-
-## How to submit code and report.
-
-1. Your program source code and report are to be turned in via your GitHub repo. Submission time is determined by the GitHub system time. You may push your code as often as you wish. Only your last submission will be graded.  
-
-## Administrative
-
-This assignment must be coded in C. Any other language will result in 0 points. Your programs will be compiled and graded on the course GitHub Codespace. Code that does not compile with the provided makefile will result in a 0.
-
-## Academic Integrity
-This assignment must be 100% your own work and your AI assistant. No code may be copied from friends,  previous students, books, web pages, etc. All code submitted is automatically checked 
-against a database of previous semester’s graded assignments, current student’s code and common web sources. By submitting your code on GitHub you are attesting that 
-you have neither given nor received unauthorized assistance on this work. Code that is copied from an external source or used as inspiration, excluding the 
-course github, will result in a 0 for the assignment and referral to the Office of Student Conduct.
